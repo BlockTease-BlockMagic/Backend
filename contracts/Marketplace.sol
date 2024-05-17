@@ -7,8 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./BlockTeaseNfts.sol";
 
 contract NFTMarketplace is ReentrancyGuard, Ownable {
+
     BlockTeaseNFTs private nftContract;
     IERC20 public paymentToken;
+    uint256 private _listingId;  // Counter for unique listing IDs
 
     struct Model {
         uint256 priceUSD;  // Price per subscription in USD
@@ -20,6 +22,7 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         uint256 price;
         address seller;
         bool isListed;
+        uint256 tokenId;
     }
 
     mapping(uint256 => Listing) public listings; // tokenId => Listing
@@ -52,8 +55,9 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
     function listNFT(uint256 tokenId, uint256 price) public {
         require(nftContract.balanceOf(msg.sender, tokenId) > 0, "Sender must own the NFT");
         require(nftContract.isApprovedForAll(msg.sender, address(this)), "Contract must be approved to manage NFT");
-
-        listings[tokenId] = Listing(price, msg.sender, true);
+        
+        listings[_listingId] = Listing(price, msg.sender, true, tokenId);
+        _listingId++;  
         emit NFTListed(msg.sender, tokenId, price);
     }
 
@@ -123,6 +127,11 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         uint256 balance = paymentToken.balanceOf(address(this));
         require(balance > 0, "No funds available");
         require(paymentToken.transfer(beneficiary, balance), "Withdrawal failed");
+    }
+
+    // Function to get the total number of listings
+    function getTotalListingIds() public view returns (uint256) {
+        return _listingId;
     }
 
 }
