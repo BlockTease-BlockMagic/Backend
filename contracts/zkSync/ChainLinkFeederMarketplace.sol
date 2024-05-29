@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
 interface IBlockTeaseNFTs {
     function mint(address account, uint256 modelId, uint256 subscriptionId, uint256 amount, uint256 duration, uint256 royaltyFee, address royaltyReceiver, bytes memory data) external;
     function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) external;

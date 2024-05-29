@@ -49,9 +49,9 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
         "console.log(`Email sent successfully to wallet address ${walletAddress} with tokenId ${tokenId}`);"
         "return Functions.encodeString(`Email sent successfully to wallet address ${walletAddress} with tokenId ${tokenId}`);";
 
-    uint32 gasLimit = 270_000;
+    uint32 gasLimit = 300_000;
     bytes32 donID = 0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000;
-    
+
     BlockTeaseNFTs private nftContract;
     IERC20 public paymentToken;
     AggregatorV3Interface public priceFeed;
@@ -68,30 +68,44 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
         uint256 expirationTime;
         uint256 modelId;
         address owner;
+        bool paused;
+        uint8 ntfnAttempts;
+    }
+
+    struct Listing {
+        uint256 tokenId;
+        uint256 price;
+        address seller;
+        bool isListed;
     }
 
     uint256[] public subscriptions;
     mapping(uint256 => Subscription) public tokenIdToSubscription;
     mapping(uint256 => Model) public models;
+    mapping(uint256 => Listing) public listings;
+    uint256 public listingId;
 
     event SubscriptionPurchased(address indexed buyer, uint256 modelId, uint256 subscriptionId, uint256 tokenId);
     event ModelUpdated(uint256 modelId, uint256 priceUSD, address associatedAddress, uint256 royaltyFee, uint256 duration);
+    event NFTListed(uint256 indexed listingId, uint256 indexed tokenId, uint256 price, address indexed seller);
+    event NFTSold(uint256 indexed listingId, uint256 indexed tokenId, uint256 price, address indexed buyer);
 
     constructor(address _priceFeedAddress, address _routerCrossChain, address _nftContract, address _paymentToken) Ownable(msg.sender) CCIPReceiver(_routerCrossChain) FunctionsClient(router) {
         nftContract = BlockTeaseNFTs(_nftContract);
         paymentToken = IERC20(_paymentToken);
         priceFeed = AggregatorV3Interface(_priceFeedAddress);
+        listingId = 1;
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
-        (uint256 modelId, uint256 subscriptionId, address user) = abi.decode(message.data, (uint256, uint256, address));
+        (uint256 modelId, uint256 subscriptionId, address user, uint256 duration) = abi.decode(message.data, (uint256, uint256, address, uint256));
 
         Model memory model = models[modelId];
         uint256 tokenId = nftContract._encodeTokenId(modelId, subscriptionId);
         nftContract.mint(user, modelId, subscriptionId, 1, model.duration, model.royaltyFees, model.associatedAddress, "");
 
         subscriptions.push(tokenId);
-        tokenIdToSubscription[tokenId] = Subscription(tokenId, block.timestamp + model.duration, modelId, user);
+        tokenIdToSubscription[tokenId] = Subscription(tokenId, block.timestamp + model.duration, modelId, user, false, 0);
 
         emit SubscriptionPurchased(user, modelId, subscriptionId, tokenId);
     }
@@ -101,13 +115,26 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
         emit ModelUpdated(modelId, priceUSD, associatedAddress, royaltyFee, duration);
     }
 
+    function updateBatchModels(uint256[] memory modelIds, uint256[] memory pricesUSD, address[] memory associatedAddresses, uint256[] memory royaltyFees, uint256[] memory durations) public onlyOwner {
+        require(modelIds.length == pricesUSD.length, "Array length mismatch");
+        require(pricesUSD.length == associatedAddresses.length, "Array length mismatch");
+        require(associatedAddresses.length == royaltyFees.length, "Array length mismatch");
+        require(royaltyFees.length == durations.length, "Array length mismatch");
+
+        for (uint256 i = 0; i < modelIds.length; i++) {
+            models[modelIds[i]] = Model(pricesUSD[i], associatedAddresses[i], royaltyFees[i], durations[i]);
+            emit ModelUpdated(modelIds[i], pricesUSD[i], associatedAddresses[i], royaltyFees[i], durations[i]);
+        }
+    }
+
     function checkUpkeep(bytes calldata) external view override returns (bool upkeepNeeded, bytes memory performData) {
         uint256[] memory expiredTokenIds = new uint256[](subscriptions.length);
         uint256 counter = 0;
 
         for (uint256 i = 0; i < subscriptions.length; i++) {
             uint256 tokenId = subscriptions[i];
-            if (tokenIdToSubscription[tokenId].expirationTime <= block.timestamp) {
+            Subscription memory subscription = tokenIdToSubscription[tokenId];
+            if (subscription.expirationTime <= block.timestamp && !subscription.paused) {
                 expiredTokenIds[counter] = tokenId;
                 counter++;
             }
@@ -132,7 +159,13 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
             if (paymentToken.balanceOf(subscription.owner) >= model.priceUSD && paymentToken.allowance(subscription.owner, address(this)) >= model.priceUSD) {
                 require(paymentToken.transferFrom(subscription.owner, address(this), model.priceUSD));
                 subscription.expirationTime = block.timestamp + model.duration;
+                subscription.ntfnAttempts = 0;  // Reset failed attempts on successful payment
             } else {
+                subscription.ntfnAttempts++;
+                if (subscription.ntfnAttempts >= 2) {
+                    subscription.paused = true;
+                }
+
                 string[] memory args = new string[](2);
                 args[0] = toAsciiString(subscription.owner);
                 args[1] = uintToString(subscription.tokenId);
@@ -140,6 +173,32 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
                 sendRequest(2825, args);
             }
         }
+    }
+
+    function listNft(uint256 tokenId, uint256 price) external {
+        Subscription memory subscription = tokenIdToSubscription[tokenId];
+        require(subscription.owner == msg.sender, "Only the owner can list this NFT");
+        require(!subscription.paused, "Paused subscriptions cannot be listed");
+
+        listings[listingId] = Listing(tokenId, price, msg.sender, true);
+        emit NFTListed(listingId, tokenId, price, msg.sender);
+        listingId++;
+    }
+
+    function buyNft(uint256 _listingId) external nonReentrant {
+        Listing storage listing = listings[_listingId];
+        require(listing.isListed, "NFT not listed for sale");
+        require(paymentToken.balanceOf(msg.sender) >= listing.price, "Insufficient balance");
+        require(paymentToken.allowance(msg.sender, address(this)) >= listing.price, "Insufficient allowance");
+
+        Subscription storage subscription = tokenIdToSubscription[listing.tokenId];
+        require(paymentToken.transferFrom(msg.sender, listing.seller, listing.price));
+        nftContract.safeTransferFrom(subscription.owner, msg.sender, subscription.tokenId, 1, "");
+        subscription.owner = msg.sender;
+
+        listing.isListed = false;
+
+        emit NFTSold(_listingId, listing.tokenId, listing.price, msg.sender);
     }
 
     function sendRequest(uint64 subscriptionId, string[] memory args) public returns (bytes32 requestId) {
@@ -161,7 +220,6 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
         emit Response(requestId, lastConfirmationMsg, s_lastError);
     }
 
-
     function purchaseSubscription(uint256 modelId, uint256 subscriptionId) public nonReentrant {
         Model memory model = models[modelId];
         require(paymentToken.transferFrom(msg.sender, address(this), model.priceUSD), "Payment failed");
@@ -169,7 +227,7 @@ contract NFTMarketplaceAutomation is CCIPReceiver, ReentrancyGuard, Ownable, Aut
         nftContract.mint(msg.sender, modelId, subscriptionId, 1, model.duration, model.royaltyFees, model.associatedAddress, "");
 
         subscriptions.push(tokenId);
-        tokenIdToSubscription[tokenId] = Subscription(tokenId, block.timestamp + model.duration, modelId, msg.sender);
+        tokenIdToSubscription[tokenId] = Subscription(tokenId, block.timestamp + model.duration, modelId, msg.sender, false, 0);
 
         emit SubscriptionPurchased(msg.sender, modelId, subscriptionId, tokenId);
     }
