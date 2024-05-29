@@ -1,6 +1,10 @@
 # 💘 BlockTease 💌
 Welcome to **BlockTease** — the ultimate fusion of **OnlyFans'** 🕊 charm with the transformative power of Web3! 🚀🌐 Dive into a world where privacy, decentralization, and seamless interactions are not just ideals but vibrant realities.
 
+![image](https://github.com/BlockTease-BlockMagic/Backend/assets/40585900/ad09411b-9a81-404f-845f-7ddc3a82e3bd)
+
+
+
 ## 🎉 Exciting Features
 
 ### 🚀 Hassle-Free Onboarding
@@ -36,8 +40,11 @@ The Avalanche integration focuses on user onboarding and content interaction wit
 
 ### Contracts
 
-- **Subscription Contract**: Manages subscriptions with functionalities enhanced by Chainlink's price feed and CCIP.
+- **UserOnboarding Contract**: Generates user profile NFT with chainlink functions --> **openAI dalle** to generate random avatar art
+  - Address: [`0x82376dA85a76360BC9FfC9a542961429A2A653ff`](https://testnet.avascan.info/blockchain/all/address/0x82376dA85a76360BC9FfC9a542961429A2A653ff/contract) 
+- **Subscription Contract**: Manages subscriptions with functionalities enhanced by **Chainlink's price feed** and **CCIP**.
   - Address: [Insert Address]
+
 
 ---
 
