@@ -1,30 +1,33 @@
 # 💘 BlockTease 💌
 Welcome to **BlockTease** — the ultimate fusion of **OnlyFans'** 🕊 charm with the transformative power of Web3! 🚀🌐 Dive into a world where privacy, decentralization, and seamless interactions are not just ideals but vibrant realities.
 
-![image](https://github.com/BlockTease-BlockMagic/Backend/assets/40585900/ad09411b-9a81-404f-845f-7ddc3a82e3bd)
+![image](https://github.com/BlockTease-BlockMagic/Backend/assets/40585900/d2d92f52-068d-4861-ae21-95a7a74fed89)
 
+## Exciting Features ⚡
 
+- 🚀 **Hassle-Free Onboarding**: 
 
-## 🎉 Exciting Features
+  Join effortlessly with **Smart Accounts** that bridge Web2 and Web3. Get started without deep blockchain knowledge — a simple, barrier-free entry into the exciting world of decentralized        applications. 
 
-### 🚀 Hassle-Free Onboarding
-Join effortlessly with **Biconomy Smart Accounts** that bridge Web2 and Web3. Get started without deep blockchain knowledge — a simple, barrier-free entry into the exciting world of decentralized applications.
+- 🎨 **Dynamic NFT Avatar Generation**: 
 
-### 🖼🎨 Dynamic NFT Avatar Generation
-Create your unique digital identity with OpenAI's DALL-E, seamlessly integrated through **Chainlink Functions** to mint dynamic NFT avatars. Thanks to **Biconomy Paymaster**, these are offered **free of charge** for new users, adding a personal touch from day one!
+    Create your unique digital identity with OpenAI's DALL-E, seamlessly integrated through **Chainlink Functions** to mint dynamic NFT avatars. Thanks to **Biconomy Paymaster**, these are     offered **free of charge** for new users, adding a personal touch from day one! 
 
-### 💌📬 Autopay Creator Subscriptions
-Never miss content from your favorite creators! Our **Chainlink Automation** setup wraps **Chainlink Functions** with nodemailer to keep you informed about your subscription status automatically.
+- 🔄 **Autopay Creator Subscriptions**: 
 
-### 🔗🌍 Cross-Chain Subscriptions
-Enjoy the freedom to follow and support creators across multiple blockchains, thanks to **Chainlink CCIP**. No worries about single chain liquidity — subscribe anywhere, anytime!
+    Never miss content from your favorite creators! Our **Chainlink Automation** setup wraps **Chainlink Functions** with nodemailer to keep you informed about your subscription status automatically. 
 
-### 🛒💸 Gasless and Bundled Transactions
-Experience the smoothest UX yet with Biconomy's gasless and bundled transactions. Approve NFTs, make payments, and manage subscriptions all in one go, without the usual gas fees.
+- 🔗🌍 **Cross-Chain Subscriptions with Custom Pricefeeds**: 
 
-### 🏆📞 Weekly Lucky Subscriber Draw
-Join the excitement with our weekly draws using **Chainlink VRF**! Every week, a lucky subscriber wins a one-on-one live call with a creator. Will it be you this time?
+    Enjoy the freedom to follow and support creators across multiple blockchains, thanks to **Chainlink CCIP** & **Chainlink PriceFeeds**. No worries about single chain liquidity — subscribe anywhere, anytime! 
 
+- 💸 **Gasless and Bundled Transactions**: 
+
+    Experience the smoothest UX yet with Smart Account gasless and bundled transactions. Approve NFTs, make payments, and manage subscriptions all in one go, without the usual gas fees. 
+
+-  🎲📞 **Monthly Lucky Subscriber Draw**: 
+
+    Join the excitement with our monthly draws using **Chainlink VRF**! Every month, a lucky subscriber wins a one-on-one live call with a creator. Will it be you this time?
 ---
 
 ## Avalanche Network
