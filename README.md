@@ -46,7 +46,7 @@ The Avalanche integration focuses on user onboarding and content interaction wit
 - **UserOnboarding Contract**: Generates user profile NFT with chainlink functions --> **openAI dalle** to generate random avatar art
   - Address: [`0x82376dA85a76360BC9FfC9a542961429A2A653ff`](https://testnet.avascan.info/blockchain/all/address/0x82376dA85a76360BC9FfC9a542961429A2A653ff/contract) 
 - **Subscription Contract**: Manages subscriptions with functionalities enhanced by **Chainlink's price feed** and **CCIP**.
-  - Address: [Insert Address]
+  - Address: [`0xf6b6A9EFAFd008b1170D703C32Fe32C0dA92fc2F`](https://testnet.avascan.info/blockchain/all/address/0xf6b6A9EFAFd008b1170D703C32Fe32C0dA92fc2F/contract)
 
 
 ---
@@ -60,28 +60,29 @@ Sepolia serves as the base layer for NFT minting and marketplace functionalities
 
 - **NFT Minting and Marketplace**: Central hub for creating and trading NFTs.
 - **MockUSD**: Utilized for all transactional tests and purchases within the network.
-  - Address: [Insert Address]
+  - Address: [`0x9d24c52916A14afc31D86B5Aa046b252383ee444`](https://sepolia.etherscan.io/address/0x9d24c52916A14afc31D86B5Aa046b252383ee444#code)
 - **Marketplace Contract**: Facilitates the buying and selling of NFTs.
-  - Address: [Insert Address]
+  - Address: [`0xc96b21eDA35A43eFfc57d459688e066315106f59`](https://sepolia.etherscan.io/address/0xc96b21eDA35A43eFfc57d459688e066315106f59#code)
 - **BlockTease NFT Contract**: Repository for all model-related NFTs.
-  - Address: [Insert Address]
+  - Address: [`0x87555010E191072421d4f4B14E75FB59abE778B0`](https://sepolia.etherscan.io/address/0x87555010E191072421d4f4B14E75FB59abE778B0#code)
 - **Chainlink Price Feeder**: Integrates Chainlink price feeds for accurate native payment processing.
+
 
 ---
 
-## Polygon Network
+## Polygon Networks
 
-### Overview
-On Polygon, the focus is on providing seamless subscription services through the use of Chainlink technologies, enhancing both the efficiency and reliability of transactions.
+### Polygon Amoy
+- Amoy network on Polygon focuses on CCIP-enabled transactions for enhanced cross-chain communication and interoperability.
+  - **CCIP Gateway Contract**: [`0xa52309ed1de8781cbeecef9d05b4b09b209b2493`](https://amoy.polygonscan.com/address/0xa52309ed1de8781cbeecef9d05b4b09b209b2493#tokentxns) — Enables cross-chain interactions using Chainlink's Cross-Chain Interoperability Protocol (CCIP).
 
-### Features
+### Polygon Cardona zkEVM
+- Our dedicated Cardona marketplace on the zkEVM layer of Polygon is designed to handle specialized transactions and features several key contracts:
+  - **mUSD Address**: `0x3FA6cfdC28Ad346c4360AA0543b5BfdA551c7111` — Manages our custom mUSD currency for transactions within the marketplace.
+  - **BlockTease NFT Address**: `0x5192Ffbc96b2E731649714B7b51d4cC4CA1fAB8F` — Repository for all model-related NFTs.
+  - **Marketplace Contract**: `0x054ba199Ef61ef15226e2CeB61138f7d5E2F8408` — Facilitates the buying and selling of NFTs and other digital assets.
 
-- **Purchase Subscription**: Leverages Chainlink price feeders and CCIP for efficient cross-chain subscriptions.
 
-### Contracts
-
-- **Purchase Subscription Contract**: Utilizes Chainlink technology for accurate and efficient subscription management.
-  - Address: [Insert Address]
 
 ---
 
@@ -97,7 +98,9 @@ zkSync is leveraged for its Layer-2 scaling solutions, providing cost-effective 
 ### Contracts
 
 - **Subscription Contract**: Manages subscription processes efficiently on zkSync's Layer-2 network.
-  - Address: [Insert Address]
+  - Address: [`0x52d8cB79B5f5C7Eab2141278C29A1c264C9dD405`](https://sepolia.explorer.zksync.io/address/0x52d8cB79B5f5C7Eab2141278C29A1c264C9dD405#contract)
+- **mUSD Contract**: For mocking payment tokens.
+  - Address: [`0x0C6AD0Fa2Fe5bae6eD2a1f82aCf760b520C81B6A`](https://sepolia.explorer.zksync.io/address/0x0C6AD0Fa2Fe5bae6eD2a1f82aCf760b520C81B6A#contract)
 
 ---
 
@@ -120,33 +123,9 @@ The project uses the following contracts deployed on the Moonbase Alpha Testnet:
 
 - **MockUSD Contract**: A mock USD stablecoin used for transactional testing within the network.
   - Address: [`0x309222b7833D3D0A59A8eBf9C64A5790bf43E2aA`](https://moonbase.moonscan.io/address/0x309222b7833D3D0A59A8eBf9C64A5790bf43E2aA)
-- **PurchaseSubscription Contract**: Manages subscriptions payments via the MockUSD token.
-  - Address: [`0xF99b791257ab50be7F235BC825E7d4B83942cf38`](https://moonbase.moonscan.io/address/0xF99b791257ab50be7F235BC825E7d4B83942cf38)
+- **Nft Marketplace Contract**: Manages subscriptions payments & marketplace list/buy handling via the MockUSD token.
+  - Address: [`0xc96b21eDA35A43eFfc57d459688e066315106f59`](https://moonbase.moonscan.io/address/0xF99b791257ab50be7F235BC825E7d4B83942cf38)
 - **Batch Contract**: Facilitates batch processing of transactions.
   - Address: [`0x0000000000000000000000000000000000000808`](https://moonbase.moonscan.io/address/0x0000000000000000000000000000000000000808)
 - **Gasless Precompile Contract**: After batching, utilizes a gasless precompile to cover the gas fees of the batch transactions.
   - Address: [`0x000000000000000000000000000000000000080a`](https://moonbase.moonscan.io/address/0x000000000000000000000000000000000000080a)
-
-### Getting Started
-
-To interact with these contracts, you will need to set up your development environment:
-
-1. **Install Dependencies**: Make sure you have Node.js and npm installed. Then run `npm install` to install the required dependencies including Hardhat and Ethers.js.
-2. **Configure Hardhat**: Set up your Hardhat environment to connect to the Moonbase Alpha Testnet. Modify your `hardhat.config.js` to include network settings for Moonbase Alpha.
-3. **Run the Script**: Execute the script using Hardhat's command line tools. For example, `npx hardhat run scripts/GassLessbatchTxn.js --network moonbasealpha`.
-
-## Network Configuration
-
-Ensure your `hardhat.config.js` includes the Moonbase Alpha network configuration as follows:
-
-```javascript
-module.exports = {
-  networks: {
-    moonbasealpha: {
-      url: "https://rpc.api.moonbase.moonbeam.network",
-      chainId: 1287,
-      accounts: [process.env.PRIVATE_KEY]
-    }
-  },
-  solidity: "0.8.20",
-};
